@@ -20,7 +20,8 @@ def get_mockDatabase():
 
 @mock.patch("devchallenge.api.get_database")
 def test_POST(mock_getDatabase):
-    mock_getDatabase.return_value = get_mockDatabase()
+    mockDb = get_mockDatabase()
+    mock_getDatabase.return_value = mockDb
 
     prescription = {
         "prescription": {
@@ -32,4 +33,5 @@ def test_POST(mock_getDatabase):
 
     app.testing = True
     client = app.test_client()
-    client.post("/prescription/1234", json=prescription)
+    response = client.post("/prescription/1234", json=prescription)
+    assert "predictions" in response.json
