@@ -8,6 +8,7 @@ pytest = "*"
 flake8 = "*"
 black = "*"
 mypy = "*"
+mongomock = "*"
 
 [packages]
 flask = "*"

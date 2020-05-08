@@ -1,4 +1,4 @@
-from unittest.mock import MagicMock
+from mongomock import MongoClient
 
 from devchallenge.api import Prescription
 
@@ -10,6 +10,6 @@ from devchallenge.api import Prescription
 
 
 def test_pass_mock_db_to_Prescription():
-    dbMock = MagicMock()
-    subject = Prescription(dbMock)
-    assert subject.db == dbMock
+    dbMock = MongoClient()
+    subject = Prescription(dbMock.db)
+    assert subject.db == dbMock.db
