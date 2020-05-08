@@ -13,6 +13,12 @@ mongo_url = os.getenv('MONGODB_URL', 'mongodb://localhost:27017/test_db')
 
 
 class Prescription(Resource):
+    def __init__(self, db):
+        if db is None:
+            client = MongoClient(mongo_url)
+            db = client.get_database()
+        self.db = db
+
     def get(self, case_id):
         """
         Get the latest prescription for a given case
@@ -117,6 +123,7 @@ class Prescription(Resource):
         )
         prescription_doc["case_id"] = case_id
 
+        #maybe unnecessary?
         client = MongoClient(mongo_url)
         db = client.get_database()
 
