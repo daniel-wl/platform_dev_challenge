@@ -1,3 +1,4 @@
+from faker import Faker
 from mongomock import MongoClient
 
 from devchallenge.api import Prescription
@@ -8,6 +9,7 @@ from devchallenge.api import Prescription
 
 #     assert doc is not None
 
+faker = Faker()
 
 def test_pass_mock_db_to_Prescription():
     dbMock = MongoClient()
