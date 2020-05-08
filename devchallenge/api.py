@@ -12,12 +12,14 @@ logger = logging.getLogger(__name__)
 mongo_url = os.getenv('MONGODB_URL', 'mongodb://localhost:27017/test_db')
 
 
+def get_database():
+    client = MongoClient(mongo_url)
+    return client.get_database()
+
+
 class Prescription(Resource):
-    def __init__(self, db):
-        if db is None:
-            client = MongoClient(mongo_url)
-            db = client.get_database()
-        self.db = db
+    def __init__(self):
+        self.db = get_database()
 
     def get(self, case_id):
         """
@@ -48,11 +50,8 @@ class Prescription(Resource):
         """
         case_id = int(case_id)
 
-        client = MongoClient(mongo_url)
-        db = client.get_database()
-
         prescription_cursor = mongo_helpers.retreive_doc(
-            db.prescription,
+            self.db.prescription,
             {"case_id": case_id},
             find_one=False,
             sort_params=("timestamp", DESCENDING),
@@ -110,8 +109,8 @@ class Prescription(Resource):
         case_id = int(case_id)
         args = request.get_json()
 
-        client = MongoClient(mongo_url)
-        db = client.get_database()
+        # client = MongoClient(mongo_url)
+        # db = client.get_database()
 
         logger.info("request received", extra={"request_data": args})
 
@@ -123,16 +122,18 @@ class Prescription(Resource):
         )
         prescription_doc["case_id"] = case_id
 
-        #maybe unnecessary?
-        client = MongoClient(mongo_url)
-        db = client.get_database()
+        # #maybe unnecessary?
+        # client = MongoClient(mongo_url)
+        # db = client.get_database()
 
-        prescription_docid, success = mongo_helpers.persist_doc(db.prescription, prescription_doc)
+        prescription_docid, success = mongo_helpers.persist_doc(
+            self.db.prescription, prescription_doc
+        )
 
         prescription_doc["_id"] = prescription_docid
-        logger.info('prescription saved', extra={"doc_id": prescription_docid})
+        logger.info('prescription saved', extra={"doc_id": str(prescription_docid)})
 
-        return {"prescription_id": prescription_docid}
+        return {"prescription_id": str(prescription_docid)}
 
 
 app = Flask('platform_dev_challenge')
